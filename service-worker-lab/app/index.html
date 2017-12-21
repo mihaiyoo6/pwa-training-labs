@@ -15,37 +15,51 @@ limitations under the License.
 -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
 
-    <!-- Set the viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Set character encoding -->
-    <meta charset="utf-8">
-    <!-- Set title -->
-    <title>Service Worker Example</title>
-    <!-- Add stylesheet -->
-    <link href="styles/index.css" rel="stylesheet">
+<head>
 
-  </head>
+  <!-- Set the viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Set character encoding -->
+  <meta charset="utf-8">
+  <!-- Set title -->
+  <title>Service Worker Example</title>
+  <!-- Add stylesheet -->
+  <link href="styles/index.css" rel="stylesheet">
 
-  <body>
+</head>
 
-    <h1>Service Worker Example</h1>
+<body>
 
-    <a href="other.html">Other page</a>
+  <h1>Service Worker Example</h1>
 
-    <br><br>
+  <a href="other.html">Other page</a>
 
-    <a href="below/another.html">Another page</a>
+  <br>
+  <br>
 
-    <script>
-      (function() {
-        'use strict';
+  <a href="below/another.html">Another page</a>
 
-        // TODO - 2: Register the service worker
+  <script>
+    (function () {
+      'use strict';
 
-      })();
-    </script>
+      // TODO - 2: Register the service worker
+      if (!('serviceWorker' in navigator)) {
+        console.log('Service worker not supported');
+        return;
+      }
+      navigator.serviceWorker.register('below/service-worker.js')
+        .then(function (regitration) {
+          console.log('Registered at scope: ', regitration.scope);
+        })
+        .catch(function (error) {
+          console.log('Registration failed:', error);
+        });
 
-  </body>
+    })();
+  </script>
+
+</body>
+
 </html>
