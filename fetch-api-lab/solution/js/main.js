@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var app = (function() {
+var app = (function () {
   'use strict';
 
   function logResult(result) {
@@ -31,10 +31,10 @@ var app = (function() {
 
   function fetchJSON() {
     fetch('examples/animals.json') // 1
-    .then(validateResponse) // 2
-    .then(readResponseAsJSON) // 3
-    .then(logResult) // 4
-    .catch(logError);
+      .then(validateResponse) // 2
+      .then(readResponseAsJSON) // 3
+      .then(logResult) // 4
+      .catch(logError);
   }
 
   function validateResponse(response) {
@@ -62,10 +62,10 @@ var app = (function() {
 
   function fetchImage() {
     fetch('examples/kitten.jpg')
-    .then(validateResponse)
-    .then(readResponseAsBlob)
-    .then(showImage)
-    .catch(logError);
+      .then(validateResponse)
+      .then(readResponseAsBlob)
+      .then(showImage)
+      .catch(logError);
   }
 
   function showText(responseAsText) {
@@ -79,21 +79,21 @@ var app = (function() {
 
   function fetchText() {
     fetch('examples/words.txt')
-    .then(validateResponse)
-    .then(readResponseAsText)
-    .then(showText)
-    .catch(logError);
+      .then(validateResponse)
+      .then(readResponseAsText)
+      .then(showText)
+      .catch(logError);
   }
 
   function headRequest() {
     fetch('examples/words.txt', {
-      method: 'HEAD'
-    })
-    .then(validateResponse)
-    .then(logSize)
-    .then(readResponseAsText)
-    .then(logResult)
-    .catch(logError);
+        method: 'HEAD'
+      })
+      .then(validateResponse)
+      .then(logSize)
+      .then(readResponseAsText)
+      .then(logResult)
+      .catch(logError);
   }
 
   function logSize(response) {
@@ -105,15 +105,15 @@ var app = (function() {
   function postRequest() {
     var formData = new FormData(document.getElementById('myForm'));
     fetch('http://localhost:5000/', {
-      method: 'POST',
-      body: formData,
-      mode: 'cors', // This is optional - mode's default value is 'cors'
-      headers: customHeaders
-    })
-    .then(validateResponse)
-    .then(readResponseAsText)
-    .then(logResult)
-    .catch(logError);
+        method: 'POST',
+        body: formData,
+        mode: 'cors', // This is optional - mode's default value is 'cors'
+        headers: customHeaders
+      })
+      .then(validateResponse)
+      .then(readResponseAsText)
+      .then(logResult)
+      .catch(logError);
   }
 
   var customHeaders = new Headers({
