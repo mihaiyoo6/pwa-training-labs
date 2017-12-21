@@ -14,13 +14,77 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-(function() {
-  'use strict';
+(function () {
+	'use strict';
 
-  // TODO 2 - cache the application shell
+	const filesToCache = [
+		'.',
+		'style/main.css',
+		'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
+		'images/still_life-1600_large_2x.jpg',
+		'images/still_life-800_large_1x.jpg',
+		'images/still_life_small.jpg',
+		'images/still_life_medium.jpg',
+		'index.html',
+		'pages/offline.html',
+		'pages/404.html'
+	];
 
-  // TODO 3 - intercept network requests
+	const staticCacheName = 'pages-cache-v2';
 
-  // TODO 7 - delete unused caches
+	self.addEventListener('install', (event) => {
+		console.log('Attepmting to install service worker and cache statisc assets');
+		event.waitUntil(
+			caches.open(staticCacheName)
+			.then(cache => cache.addAll(filesToCache))
+		);
+	});
+
+	self.addEventListener('fetch', event => {
+		const url = event.request.url;
+		console.log('Fetch event for ', url);
+		event.respondWith(
+			caches.match(event.request)
+			.then(response => {
+				if (response) {
+					console.log('Found ', url, ' in cache');
+					return response;
+				}
+				console.log('Network request for ', url);
+				return fetch(event.request);
+			})
+			.then(response => {
+				if (response.status === 404) {
+					return caches.match('pages/404.html');
+				}
+
+				return caches.open(staticCacheName).then(cache => {
+					if (event.request.url.indexOf('text') < 0) {
+						cache.put(event.request.url, response.clone());
+						return response;
+					}
+				});
+			})
+			.catch(error => {
+				return caches.match('pages/offline.html');
+			})
+		);
+	});
+
+	// TODO 7 - delete unused caches
+	self.addEventListener('activate', event => {
+		console.log('Activate new service worker...');
+		const cacheWhiteList = [staticCacheName];
+		event.waitUntil(
+			caches.keys()
+			.then(cacheNames => Promise.all(
+				cacheNames.map(cacheName => {
+					if (cacheWhiteList.indexOf(cacheName) === -1) {
+						return caches.delete(cacheName);
+					}
+				})
+			))
+		);
+	});
 
 })();
