@@ -1,0 +1,24 @@
+{
+  "name": "pwa-training-labs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -p 8080 -a localhost -c 0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mihaiyoo6/pwa-training-labs.git"
+  },
+  "keywords": [],
+  "author": "Mihai Mijea <mijeamihai@yahoo.com> (http://mijeamihai.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mihaiyoo6/pwa-training-labs/issues"
+  },
+  "homepage": "https://github.com/mihaiyoo6/pwa-training-labs#readme",
+  "devDependencies": {
+    "http-server": "0.10.0"
+  }
+}
