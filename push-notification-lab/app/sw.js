@@ -13,13 +13,88 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-(function() {
+(function () {
   'use strict';
 
-  // TODO 2.6 - Handle the notificationclose event
+  self.addEventListener('notificationclose', function (e) {
+    var notification = e.notification;
+    var primaryKey = notification.data.primaryKey;
 
-  // TODO 2.7 - Handle the notificationclick event
+    console.log('Closed notification: ' + primaryKey);
+  });
 
-  // TODO 3.1 - add push event listener
+  self.addEventListener('notificationclick', function (e) {
+
+    const notification = e.notification;
+    const primaryKey = notification.data.primaryKey;
+    const action = e.action;
+    console.log('Open page notification: ' + primaryKey);
+
+    if (action === 'close') {
+      notification.close();
+    } else {
+      e.waitUntil(
+        clients.matchAll().then(function (clis) {
+          var client = clis.find(function (c) {
+            return c.visibilityState === 'visible';
+          });
+          if (client !== undefined) {
+            client.navigate('samples/page' + primaryKey + '.html');
+            client.focus();
+          } else {
+            // there are no visible windows. Open one.
+            clients.openWindow('samples/page' + primaryKey + '.html');
+            notification.close();
+          }
+        })
+      );
+    }
+    self.registration.getNotifications().then(function (notifications) {
+      notifications.forEach(function (notification) {
+        notification.close();
+      });
+    });
+  });
+
+  self.addEventListener('push', e => {
+    let body = 'Default body';
+
+    if (e.data) {
+      body = e.data.text();
+    }
+
+    const options = {
+      body,
+      icon: 'images/notification-flat.png',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: '-push-notification'
+      },
+      actions: [{
+          action: 'explore',
+          title: 'Go to the site',
+          icon: 'images/checkmark.png'
+        },
+        {
+          action: 'close',
+          title: 'Close the notification',
+          icon: 'images/xmark.png'
+        },
+      ]
+    };
+    e.waitUntil(
+      clients.matchAll().then(function (c) {
+        console.log(c);
+        if (c.length === 0) {
+          // Show notification
+          self.registration.showNotification(title, options);
+        } else {
+          // Send a message to the page to update the UI
+          console.log('Application is already open!');
+        }
+      })
+    );
+  });
 
 })();

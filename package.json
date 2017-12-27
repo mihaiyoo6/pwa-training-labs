@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "http-server -p 8080 -a localhost -c 0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm-run-all --parallel lt server",
+    "server": "http-server -p 8080 -a localhost -c 0",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lt": "lt --port 8080 --subdomain mmihai"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,8 @@
   },
   "homepage": "https://github.com/mihaiyoo6/pwa-training-labs#readme",
   "devDependencies": {
-    "http-server": "0.10.0"
+    "http-server": "0.10.0",
+    "localtunnel": "1.8.3",
+    "npm-run-all": "4.1.2"
   }
 }
