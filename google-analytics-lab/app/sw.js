@@ -15,20 +15,25 @@ limitations under the License.
 */
 
 // TODO 8.2a - Import the helper script
+self.importScripts('js/analytics-helper.js');
 
 // TODO 9 - Add offline analytics script
+importScripts('./node_modules/sw-offline-google-analytics/build/importScripts/sw-offline-google-analytics.dev.v0.0.25.js');
+goog.offlineGoogleAnalytics.initialize();
 
-(function() {
+(function () {
   'use strict';
 
-  self.addEventListener('notificationclose', function(e) {
+  self.addEventListener('notificationclose', function (e) {
     var notification = e.notification;
     var primaryKey = notification.data.primaryKey;
     console.log('Closed notification: ' + primaryKey);
-    // TODO 8.2b - Notification close event
+    e.waitUntil(
+      sendAnalyticsEvent('close', 'notification')
+    );
   });
 
-  self.addEventListener('notificationclick', function(e) {
+  self.addEventListener('notificationclick', function (e) {
     var notification = e.notification;
     var primaryKey = notification.data.primaryKey;
     notification.close();
@@ -36,11 +41,12 @@ limitations under the License.
       Promise.all([
         clients.openWindow('pages/page' + primaryKey + '.html'),
         // TODO 8.2c - Notification click event
+        sendAnalyticsEvent('click', 'notification')
       ])
     );
   });
 
-  self.addEventListener('push', function(e) {
+  self.addEventListener('push', function (e) {
     var options = {
       body: 'This notification was generated from a push!',
       icon: 'images/notification-flat.png',
@@ -51,9 +57,9 @@ limitations under the License.
       }
     };
     e.waitUntil(Promise.all([
-        self.registration.showNotification('Hello world!', options),
-        // TODO 8.2d - Push recieved event
-      ])
-    );
+      self.registration.showNotification('Hello world!', options),
+      // TODO 8.2d - Push recieved event
+      sendAnalyticsEvent('received', 'push')
+    ]));
   });
 })();

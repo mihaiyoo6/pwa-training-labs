@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-(function() {
+(function () {
   'use strict';
 
   if (!('Notification' in window)) {
@@ -32,18 +32,18 @@ limitations under the License.
   }
 
   // Request notification permission
-  Notification.requestPermission(function(status) {
+  Notification.requestPermission(function (status) {
     console.log('Notification permission status:', status);
   });
 
   // Register service worker
   navigator.serviceWorker.register('sw.js')
-  .then(function(reg) {
-    console.log('Service Worker Registered!', reg);
-  })
-  .catch(function(err) {
-    console.log('Service Worker registration failed: ', err);
-  });
+    .then(function (reg) {
+      console.log('Service Worker Registered!', reg);
+    })
+    .catch(function (err) {
+      console.log('Service Worker registration failed: ', err);
+    });
 
   // Send custom analytics event
 
@@ -51,7 +51,12 @@ limitations under the License.
   purchaseButton.onclick = markPurchase;
 
   function markPurchase() {
-    // TODO 6: Send a custom event
+    ga('send', {
+      hitType: 'event',
+      eventCategory: 'products',
+      eventAction: 'purchase',
+      eventLabel: 'Summer products launch'
+    });
   }
 
   // Subscribe functionality
@@ -61,31 +66,33 @@ limitations under the License.
 
   function subscribe() {
     navigator.serviceWorker.ready
-    .then(function(reg) {
-      reg.pushManager.getSubscription()
-      .then(function(sub) {
-        if (!sub) {
-          reg.pushManager.subscribe({userVisibleOnly: true})
-          .then(function(subscription) {
-            console.log('Subscribed to push,', subscription);
-            // TODO 7.2a - Subscribe event
-          })
-          .catch(function(error) {
-            if (Notification.permission === 'denied') {
-              console.warn('Subscribe failed, notifications are blocked');
-              // Optional TODO - Send hits for subscribe error
+      .then(function (reg) {
+        reg.pushManager.getSubscription()
+          .then(function (sub) {
+            if (!sub) {
+              reg.pushManager.subscribe({
+                  userVisibleOnly: true
+                })
+                .then(function (subscription) {
+                  console.log('Subscribed to push,', subscription);
+                  ga('send', 'event', 'push', 'subscribe', 'success');
+                })
+                .catch(function (error) {
+                  if (Notification.permission === 'denied') {
+                    console.warn('Subscribe failed, notifications are blocked');
+                    // Optional TODO - Send hits for subscribe error
+                  } else {
+                    console.error('Unable to subscribe to push', error);
+                    // Optional TODO - Send hits for subscribe error
+                  }
+                });
             } else {
-              console.error('Unable to subscribe to push', error);
-              // Optional TODO - Send hits for subscribe error
+              console.log('Already subscribed');
             }
+          }).catch(function (error) {
+            console.log('Cannot access Subscription object', error);
           });
-        } else {
-          console.log('Already subscribed');
-        }
-      }).catch(function(error) {
-        console.log('Cannot access Subscription object', error);
       });
-    });
   }
 
   // Unsubscribe functionality
@@ -95,24 +102,24 @@ limitations under the License.
 
   function unsubscribe() {
     navigator.serviceWorker.ready
-    .then(function(reg) {
-      reg.pushManager.getSubscription()
-      .then(function(sub) {
-        if (sub) {
-          sub.unsubscribe()
-          .then(function() {
-            console.log('Unsubscribed!');
-            // TODO 7.2b - Unsubscribe event
+      .then(function (reg) {
+        reg.pushManager.getSubscription()
+          .then(function (sub) {
+            if (sub) {
+              sub.unsubscribe()
+                .then(function () {
+                  console.log('Unsubscribed!');
+                  ga('send', 'event', 'push', 'unsubscribe', 'success');
+                });
+            } else {
+              console.log('Not currently subscribed');
+            }
           });
-        } else {
-          console.log('Not currently subscribed');
-        }
+      })
+      .catch(function (error) {
+        console.warn('Error unsubscribing', error);
+        // Optional TODO - Send hits for unsubscribe error
       });
-    })
-    .catch(function(error) {
-      console.warn('Error unsubscribing', error);
-      // Optional TODO - Send hits for unsubscribe error
-    });
   }
 
 })();
